@@ -35,8 +35,8 @@ def plot_graph(graph, title=None):
     )
     edge_index = edge_index.cpu().numpy()
     pos = pos.cpu().numpy()
-    if title == "Grid-to-mesh":
-        print(graph.edge_attrs())
+    #if title == "Grid-to-mesh":
+        #print(graph.edge_attrs())
 
     # Plot edges
     from_pos = pos[edge_index[0]]  # (M/2, 2)
@@ -163,7 +163,7 @@ def prepend_node_index(graph, new_index):
 
 
 def create_graph(
-    graph_dir_path: str,
+    # graph_dir_path: str,
     latlon: np.ndarray,
     land_sea_mask: np.ndarray,
     n_max_levels: int,
@@ -238,9 +238,9 @@ def create_graph(
     None
 
     """
-    os.makedirs(graph_dir_path, exist_ok=True)
+    #os.makedirs(graph_dir_path, exist_ok=True)
 
-    print(f"Writing graph components to {graph_dir_path}")
+    #print(f"Writing graph components to {graph_dir_path}")
 
     xy = lat_lon_deg_to_cartesian(node_lat = latlon[:,:,0], node_lon = latlon[:,:,1])
     grid_xy = torch.tensor(xy)
@@ -359,8 +359,8 @@ def create_graph(
                 plt.show()
 
         # Save up and down edges
-        save_edges_list(up_graphs, "mesh_up", graph_dir_path)
-        save_edges_list(down_graphs, "mesh_down", graph_dir_path)
+        #save_edges_list(up_graphs, "mesh_up", graph_dir_path)
+        #save_edges_list(down_graphs, "mesh_down", graph_dir_path)
 
         # Extract intra-level edges for m2m
         m2m_graphs = [
@@ -418,15 +418,15 @@ def create_graph(
             plt.show()
 
     # Save m2m edges
-    save_edges_list(m2m_graphs, "m2m", graph_dir_path)
+    #save_edges_list(m2m_graphs, "m2m", graph_dir_path)
 
     # Divide mesh node pos by max coordinate of grid cell
     mesh_pos = [pos / pos_max for pos in mesh_pos]
 
     # Save mesh positions
-    torch.save(
-        mesh_pos, os.path.join(graph_dir_path, "mesh_features.pt")
-    )  # mesh pos, in float32
+    #torch.save(
+    #    mesh_pos, os.path.join(graph_dir_path, "mesh_features.pt")
+    #)  # mesh pos, in float32
 
     #
     # Grid2Mesh
@@ -439,17 +439,21 @@ def create_graph(
     # mesh nodes on lowest level
     vm = G_bottom_mesh.nodes
     vm_xy = np.array([xy for _, xy in vm.data("pos")])
-    print(list(vm.data("pos"))[None:100:None])
+    # print(list(vm.data("pos"))[None:100:None])
     # distance between mesh nodes
     dm = np.sqrt(
-        np.sum((vm.data("pos")[(0, 1, 0)] - vm.data("pos")[(0, 0, 0)]) ** 2)
+        np.sum((vm.data("pos")[(0, 1, 6)] - vm.data("pos")[(0, 0, 6)]) ** 2)
     )
 
     # grid nodes
     Nx, Ny = xy.shape[:2]
-
+ 
     G_grid = networkx.grid_2d_graph(Ny, Nx)
     G_grid.clear_edges()
+
+    # remove nodes that are not on sea
+    nodes_to_remove = [(i, j) for i in range(Ny) for j in range(Nx) if not land_sea_mask[j, i]]
+    G_grid.remove_nodes_from(nodes_to_remove)
 
     # vg features (only pos introduced here)
     for node in G_grid.nodes:
@@ -544,9 +548,9 @@ def create_graph(
 
     # Save g2m and m2g everything
     # g2m
-    save_edges(pyg_g2m, "g2m", graph_dir_path)
+    #save_edges(pyg_g2m, "g2m", graph_dir_path)
     # m2g
-    save_edges(pyg_m2g, "m2g", graph_dir_path)
+    #save_edges(pyg_m2g, "m2g", graph_dir_path)
 
 
 def create_graph_from_datastore(
@@ -629,7 +633,7 @@ def cli(input_args=None):
 
 
 if __name__ == "__main__":
-    """
+    
     np.random.seed(42)
 
     a = np.arange(5, 25, 0.083, dtype=np.float32)
@@ -645,7 +649,7 @@ if __name__ == "__main__":
         land_sea_mask=land_sea_mask,  # Not used in this example
         n_max_levels=5,
         hierarchical=True,
-        create_plot=False,
+        create_plot=True,
     )
-    """
-    cli()
+    
+    #cli()

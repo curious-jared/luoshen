@@ -34,12 +34,13 @@ def main(input_args=None):
         "--config_path",
         type=Path,
         help="Path to the configuration for mllam-data-prep" ,
+        default="/share/home/dq046/Glorys_SCS_2004-2020/Glorys.mllam.yaml"
     )
     parser.add_argument(
         "--model",
         type=str,
-        default="graph_lam",
-        help="Model architecture to train/evaluate (default: graph_lam)",
+        default="hi_lam",
+        help="Model architecture to train/evaluate (default: hi_lam)",
     )
     parser.add_argument(
         "--seed", type=int, default=42, help="random seed (default: 42)"
@@ -188,7 +189,7 @@ def main(input_args=None):
     parser.add_argument(
         "--eval",
         type=str,
-        help="Eval model on given data split (val/test) "
+        help="Eval model on given data split (test) "
         "(default: None (train model))",
     )
     parser.add_argument(
@@ -217,8 +218,8 @@ def main(input_args=None):
     parser.add_argument(
         "--logger-project",
         type=str,
-        default="neural_lam",
-        help="Logger project name, for eg. Wandb (default: neural_lam)",
+        default="luoshen",
+        help="Logger project name, for eg. Wandb (default: luoshen)",
     )
     parser.add_argument(
         "--val_steps_to_log",
@@ -305,7 +306,7 @@ def main(input_args=None):
     else:
         prefix = "train-"
     run_name = (
-        f"{prefix}{args.model}-{args.processor_layers}x{args.hidden_dim}-"
+        f"{prefix}{args.model}-all_without_land-{args.processor_layers}x{args.hidden_dim}-"
         f"{time.strftime('%m_%d_%H')}-{random_run_id:04d}"
     )
 

@@ -1,7 +1,8 @@
 import logging
 import xarray as xr
 import numpy as np
-from utils import lat_lon_deg_to_cartesian
+import sys
+#from utils import lat_lon_deg_to_cartesian
 """
 def main():
     logging.info('started')
@@ -10,6 +11,8 @@ def main():
 """
 
 if __name__ == "__main__":
+    print(sys.path)
+    """
     #main()
     nx = 3
     lev = 1
@@ -18,14 +21,16 @@ if __name__ == "__main__":
     b = np.arange(100, 125)
     mg = np.meshgrid(a, b, indexing="ij")  # Use 'ij' indexing for (Nx,Ny)
     latlon = np.stack((mg[0], mg[1]), axis=-1)
+    print(latlon.shape)
+    print(latlon[:,:,0])
     
-    xy = lat_lon_deg_to_cartesian(node_lat = latlon[:,:,0], node_lon = latlon[:,:,1])
-    print(xy.shape)
-    print(xy.shape[0] - 1)
+    #xy = lat_lon_deg_to_cartesian(node_lat = latlon[:,:,0], node_lon = latlon[:,:,1])
+    #print(xy.shape)
+    #print(xy.shape[0] - 1)
     # print(xy[:,:,1])
-    print(xy[:,:,1][1:-1:3, 1:-1:3].shape)
+    #print(xy[:,:,1][1:-1:3, 1:-1:3].shape)
 
-    """
+    
     nlev = int(np.log(max(xy.shape[:2])) / np.log(nx))
     nleaf = nx**nlev
     n = int(nleaf / (nx**lev))

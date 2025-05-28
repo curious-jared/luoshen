@@ -9,9 +9,9 @@ import torch
 from lightning_fabric.utilities import seed
 from loguru import logger
 
-from .util import utils
+from . import utils
 from .models import HiLAM
-from .util.weather_dataset import WeatherDataModule
+from .weather_dataset import WeatherDataModule
 
 
 MODELS = {

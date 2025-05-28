@@ -1,6 +1,6 @@
 from torch import nn
 
-from ..util import utils
+from .. import utils
 from ..datastore import BaseDatastore
 from .interaction_net import InteractionNet
 from .base_graph_model import BaseGraphModel

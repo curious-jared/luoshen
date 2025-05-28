@@ -6,7 +6,7 @@ from typing import List
 
 import dataclass_wizard
 import mllam_data_prep as mdp
-# import cartopy.crs as ccrs
+import cartopy.crs as ccrs
 import xarray as xr
 from loguru import logger
 from numpy import ndarray
@@ -377,6 +377,61 @@ class MDPDatastore(BaseRegularGridDatastore):
         ).astype(int)
         return self.stack_grid_coords(da_or_ds=ds_unstacked.boundary_mask)
 
+    @property
+    def coords_projection(self) -> ccrs.Projection:
+        """
+        Return the projection of the coordinates.
+
+        NOTE: currently this expects the projection information to be in the
+        `extra` section of the configuration file, with a `projection` key
+        containing a `class_name` and `kwargs` for constructing the
+        `cartopy.crs.Projection` object. This is a temporary solution until
+        the projection information can be parsed in the produced dataset
+        itself. `mllam-data-prep` ignores the contents of the `extra` section
+        of the config file which is why we need to check that the necessary
+        parts are there.
+
+        Returns
+        -------
+        ccrs.Projection
+            The projection of the coordinates.
+
+        """
+        if "projection" not in self._config.extra:
+            raise ValueError(
+                "projection information not found in the configuration file "
+                f"({self._config_path}). Please add the projection information"
+                "to the `extra` section of the config, by adding a "
+                "`projection` key with the class name and kwargs of the "
+                "projection."
+            )
+
+        projection_info = self._config.extra["projection"]
+        if "class_name" not in projection_info:
+            raise ValueError(
+                "class_name not found in the projection information. Please "
+                "add the class name of the projection to the `projection` key "
+                "in the `extra` section of the config."
+            )
+        if "kwargs" not in projection_info:
+            raise ValueError(
+                "kwargs not found in the projection information. Please add "
+                "the keyword arguments of the projection to the `projection` "
+                "key in the `extra` section of the config."
+            )
+
+        class_name = projection_info["class_name"]
+        ProjectionClass = getattr(ccrs, class_name)
+        # need to copy otherwise we modify the dict stored in the dataclass
+        # in-place
+        kwargs = copy.deepcopy(projection_info["kwargs"])
+
+        globe_kwargs = kwargs.pop("globe", {})
+        if len(globe_kwargs) > 0:
+            kwargs["globe"] = ccrs.Globe(**globe_kwargs)
+
+        return ProjectionClass(**kwargs)
+
     @cached_property
     def land_sea_mask(self) -> xr.DataArray:
         """
@@ -386,7 +441,7 @@ class MDPDatastore(BaseRegularGridDatastore):
         -------
         xr.DataArray
             Unstacked Land and sea mask for the dataset, where 1 is a
-            sea point and 0 is land point. [lat,lon,feature]
+            sea point and 0 is land point. [feature,lat,lon]
 
         """
         return self.unstack_grid_coords(self._ds["static"])

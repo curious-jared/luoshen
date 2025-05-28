@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 
-from .util import utils
+from . import utils
 from .datastore.base import BaseRegularGridDatastore
 
 

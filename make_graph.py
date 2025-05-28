@@ -238,9 +238,9 @@ def create_graph(
     None
 
     """
-    #os.makedirs(graph_dir_path, exist_ok=True)
+    os.makedirs(graph_dir_path, exist_ok=True)
 
-    #print(f"Writing graph components to {graph_dir_path}")
+    print(f"Writing graph components to {graph_dir_path}")
 
     xy = lat_lon_deg_to_cartesian(node_lat = latlon[:,:,0], node_lon = latlon[:,:,1])
     grid_xy = torch.tensor(xy)
@@ -253,7 +253,7 @@ def create_graph(
     # graph geometry
     nx = 3  # number of children =nx**2
     nlev = int(np.log(max(xy.shape[:2])) / np.log(nx))
-    nleaf = nx**nlev  # leaves at the bottom = nleaf**2
+    # nleaf = nx**nlev  # leaves at the bottom = nleaf**2
 
     mesh_levels = nlev - 1
     if n_max_levels:
@@ -442,7 +442,7 @@ def create_graph(
     print(list(vm.data("pos"))[None:100:None])
     # distance between mesh nodes
     dm = np.sqrt(
-        np.sum((vm.data("pos")[(0, 1, 6)] - vm.data("pos")[(0, 0, 6)]) ** 2)
+        np.sum((vm.data("pos")[(0, 1, 0)] - vm.data("pos")[(0, 0, 0)]) ** 2)
     )
 
     # grid nodes
@@ -558,7 +558,7 @@ def create_graph_from_datastore(
 ):
     if isinstance(datastore, BaseRegularGridDatastore):
         latlon = datastore.get_latlon(category="state", stacked=False)
-        land_sea_mask = datastore.land_sea_mask().values
+        land_sea_mask = np.squeeze(datastore.land_sea_mask.values)
     else:
         raise NotImplementedError(
             "Only graph creation for BaseRegularGridDatastore is supported"
@@ -617,7 +617,7 @@ def cli(input_args=None):
     ), "Specify your config with --config_path"
 
     # Load neural-lam configuration and datastore to use
-    datastore = load_datastore(config_path=args.config_path)
+    datastore = load_datastore(datastore_kind=args.datastore_kind,config_path=args.config_path)
 
     create_graph_from_datastore(
         datastore=datastore,

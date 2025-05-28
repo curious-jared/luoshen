@@ -9,9 +9,9 @@ import torch
 import xarray as xr
 
 from ..datastore import BaseDatastore
-from ..util import metrics
-from ..util.weather_dataset import WeatherDataset
-from ..util.utils import get_state_feature_weighting
+from .. import metrics
+from ..weather_dataset import WeatherDataset
+from ..utils import get_state_feature_weighting
 from .. import vis
 
 class ARModel(pl.LightningModule):

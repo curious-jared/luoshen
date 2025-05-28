@@ -7,7 +7,7 @@ import pytorch_lightning as pl
 import torch
 import xarray as xr
 
-from ..datastore.base import BaseDatastore
+from .datastore.base import BaseDatastore
 
 class WeatherDataset(torch.utils.data.Dataset):
     """Dataset class for weather data.

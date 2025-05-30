@@ -163,7 +163,7 @@ def prepend_node_index(graph, new_index):
 
 
 def create_graph(
-    # graph_dir_path: str,
+    graph_dir_path: str,
     latlon: np.ndarray,
     land_sea_mask: np.ndarray,
     n_max_levels: int,
@@ -238,9 +238,9 @@ def create_graph(
     None
 
     """
-    #os.makedirs(graph_dir_path, exist_ok=True)
+    os.makedirs(graph_dir_path, exist_ok=True)
 
-    #print(f"Writing graph components to {graph_dir_path}")
+    print(f"Writing graph components to {graph_dir_path}")
 
     xy = lat_lon_deg_to_cartesian(node_lat = latlon[:,:,0], node_lon = latlon[:,:,1])
     grid_xy = torch.tensor(xy)
@@ -359,8 +359,8 @@ def create_graph(
                 plt.show()
 
         # Save up and down edges
-        #save_edges_list(up_graphs, "mesh_up", graph_dir_path)
-        #save_edges_list(down_graphs, "mesh_down", graph_dir_path)
+        save_edges_list(up_graphs, "mesh_up", graph_dir_path)
+        save_edges_list(down_graphs, "mesh_down", graph_dir_path)
 
         # Extract intra-level edges for m2m
         m2m_graphs = [
@@ -418,15 +418,15 @@ def create_graph(
             plt.show()
 
     # Save m2m edges
-    #save_edges_list(m2m_graphs, "m2m", graph_dir_path)
+    save_edges_list(m2m_graphs, "m2m", graph_dir_path)
 
     # Divide mesh node pos by max coordinate of grid cell
     mesh_pos = [pos / pos_max for pos in mesh_pos]
 
     # Save mesh positions
-    #torch.save(
-    #    mesh_pos, os.path.join(graph_dir_path, "mesh_features.pt")
-    #)  # mesh pos, in float32
+    torch.save(
+        mesh_pos, os.path.join(graph_dir_path, "mesh_features.pt")
+    )  # mesh pos, in float32
 
     #
     # Grid2Mesh
@@ -548,9 +548,9 @@ def create_graph(
 
     # Save g2m and m2g everything
     # g2m
-    #save_edges(pyg_g2m, "g2m", graph_dir_path)
+    save_edges(pyg_g2m, "g2m", graph_dir_path)
     # m2g
-    #save_edges(pyg_m2g, "m2g", graph_dir_path)
+    save_edges(pyg_m2g, "m2g", graph_dir_path)
 
 
 def create_graph_from_datastore(
@@ -633,7 +633,7 @@ def cli(input_args=None):
 
 
 if __name__ == "__main__":
-    
+    """
     np.random.seed(42)
 
     a = np.arange(5, 25, 0.083, dtype=np.float32)
@@ -651,5 +651,5 @@ if __name__ == "__main__":
         hierarchical=True,
         create_plot=True,
     )
-    
-    #cli()
+    """
+    cli()
